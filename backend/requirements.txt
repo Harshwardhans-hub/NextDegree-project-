@@ -1,0 +1,11 @@
+# NextDegree AI — Backend Dependencies
+# Install with:  py -m pip install -r requirements.txt
+
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+email-validator
+pandas
+google-genai
+python-dotenv

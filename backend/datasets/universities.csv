@@ -1,0 +1,41 @@
+university_name,country,course,min_cgpa,min_gre,tuition_fees,living_cost,avg_salary,roi_rating
+Arizona State University,USA,Computer Science,6.5,290,2800000,1200000,8500000,Excellent
+University of Texas Dallas,USA,Computer Science,7.0,300,3900000,1300000,9200000,Excellent
+Purdue University,USA,Computer Science,7.5,310,4100000,1100000,9800000,Excellent
+Northeastern University,USA,Computer Science,7.0,305,5500000,1500000,10200000,Excellent
+University of Florida,USA,Computer Science,7.0,295,2200000,1000000,8200000,High
+University of Illinois Chicago,USA,Computer Science,6.5,295,3200000,1200000,8800000,High
+New York University,USA,Computer Science,7.5,310,5800000,1800000,11000000,Excellent
+UC Irvine,USA,Computer Science,7.0,305,4400000,1600000,9500000,Excellent
+Stony Brook University,USA,Computer Science,7.0,300,2600000,1100000,8000000,High
+University of Massachusetts Amherst,USA,Computer Science,7.5,305,3800000,1200000,9000000,High
+Indiana University Bloomington,USA,Computer Science,6.5,288,3100000,1100000,8200000,High
+University of Southern California,USA,Computer Science,7.5,312,5200000,1600000,10500000,Excellent
+Arizona State University,USA,Data Science,6.5,288,2900000,1200000,8000000,High
+University of Texas Dallas,USA,Data Science,7.0,298,4000000,1300000,8700000,Excellent
+Purdue University,USA,Data Science,7.5,308,4200000,1100000,9200000,Excellent
+Northeastern University,USA,Data Science,7.0,303,5600000,1500000,9800000,Excellent
+UC Irvine,USA,Data Science,7.0,302,4500000,1600000,9000000,Excellent
+University of California San Diego,USA,Data Science,7.5,310,5000000,1700000,10500000,Excellent
+University of Waterloo,Canada,Computer Science,7.0,295,2200000,900000,7500000,High
+University of British Columbia,Canada,Computer Science,7.5,305,3100000,1100000,8200000,Excellent
+McGill University,Canada,Computer Science,7.0,300,2000000,1000000,7800000,High
+University of Toronto,Canada,Computer Science,8.0,315,3500000,1200000,9000000,Excellent
+Simon Fraser University,Canada,Computer Science,6.5,290,2100000,900000,7200000,High
+University of Edinburgh,UK,Computer Science,7.0,300,4500000,1100000,7500000,High
+University of Manchester,UK,Computer Science,6.5,295,4000000,1000000,7200000,High
+University College London,UK,Computer Science,7.5,310,5500000,1400000,9000000,Excellent
+University of Southampton,UK,Computer Science,6.5,290,3800000,950000,7000000,High
+University of Melbourne,Australia,Computer Science,6.5,285,3500000,1200000,7500000,High
+University of Sydney,Australia,Computer Science,7.0,295,4000000,1300000,7800000,High
+Monash University,Australia,Computer Science,6.5,285,3200000,1100000,7200000,High
+Technical University of Munich,Germany,Computer Science,7.5,300,200000,900000,7000000,Excellent
+RWTH Aachen University,Germany,Computer Science,7.0,295,150000,850000,6800000,Excellent
+University of Stuttgart,Germany,Computer Science,7.0,290,200000,800000,6500000,High
+Indiana University Bloomington,USA,Business Administration,6.5,285,4200000,1100000,8500000,High
+University of Florida,USA,Business Administration,7.0,295,3200000,1000000,8000000,High
+Arizona State University,USA,Business Administration,6.5,285,3000000,1200000,8000000,High
+Purdue University,USA,Mechanical Engineering,7.5,308,4100000,1100000,8500000,Excellent
+University of Texas Dallas,USA,Mechanical Engineering,7.0,298,3900000,1300000,8200000,High
+Arizona State University,USA,Mechanical Engineering,6.5,288,2800000,1200000,7800000,High
+University of Illinois Chicago,USA,Mechanical Engineering,6.5,290,3200000,1200000,8000000,High
