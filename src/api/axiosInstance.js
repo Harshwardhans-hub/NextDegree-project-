@@ -11,7 +11,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? 'https://nextdegree-backend.onrender.com/api' : 'http://127.0.0.1:8000/api'),
   timeout: 15000,                        // 15 seconds before timeout error
   headers: { 'Content-Type': 'application/json' },
 });
