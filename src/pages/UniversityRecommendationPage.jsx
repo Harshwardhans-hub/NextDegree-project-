@@ -151,7 +151,7 @@ const UniCard = ({ uni, index, onAnalyze }) => (
         </span>
         <button
           onClick={() => onAnalyze(uni)}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-600 hover:bg-primary-500 text-white transition-colors shadow-md shadow-primary-500/20"
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-600 hover:bg-primary-500 text-background transition-colors shadow-md shadow-primary-500/20"
         >
           Analyze ROI <ExternalLink className="h-3 w-3" />
         </button>
@@ -435,8 +435,7 @@ const UniversityRecommendationPage = () => {
                     <UniCard
                       key={`${uni.university_name}-${i}`}
                       uni={uni}
-                      index={i}
-                      onAnalyze={(u) => navigate('/roi', { state: { university: u } })}
+                      onAnalyze={(u) => navigate('/roi-analysis', { state: { university: u } })}
                     />
                   ))
                 : <EmptyState hasProfile={hasProfile} />}
@@ -459,17 +458,17 @@ const UniversityRecommendationPage = () => {
                       <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} unit="L" />
                       <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                      <Bar dataKey="Tuition" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="Salary"  fill="#10B981" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Tuition" fill="var(--chart-accent)" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Salary"  fill="var(--chart-primary)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
                 <div className="flex gap-6 justify-center mt-4">
                   <div className="flex items-center gap-2 text-xs text-gray-400">
-                    <div className="w-3 h-3 rounded-sm bg-blue-500" /> Tuition / yr
+                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--chart-accent)' }} /> Tuition / yr
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-400">
-                    <div className="w-3 h-3 rounded-sm bg-emerald-500" /> Avg Salary
+                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--chart-primary)' }} /> Avg Salary
                   </div>
                 </div>
               </div>

@@ -14,7 +14,7 @@ import { useApp } from '../context/AppContext';
 import { DEMO_EXPENSE_CHART, DEMO_SALARY_PROJECTION } from '../utils/demoData';
 
 // ── Chart config ───────────────────────────────────────────────────────────────
-const COLORS = ['#6366f1', '#8B5CF6', '#10B981', '#F59E0B'];
+const COLORS = ['var(--chart-primary)', 'var(--chart-accent)', 'var(--chart-tertiary)', 'var(--chart-quaternary)'];
 
 const TOOLTIP_STYLE = {
   contentStyle: {
@@ -335,8 +335,8 @@ const Dashboard = () => {
                     <YAxis tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} unit="L" width={36} />
                     <Tooltip {...TOOLTIP_STYLE} formatter={(v) => [`₹${v}L`, 'Salary']} />
                     <Line
-                      type="monotone" dataKey="salary" stroke="#6366f1" strokeWidth={2.5}
-                      dot={{ fill: '#6366f1', r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5 }}
+                      type="monotone" dataKey="salary" stroke="var(--chart-primary)" strokeWidth={2.5}
+                      dot={{ fill: 'var(--chart-primary)', r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>

@@ -14,7 +14,7 @@ import {
 import toast from 'react-hot-toast';
 
 // ─── Colour config ─────────────────────────────────────────────────────────────
-const PIE_COLORS = ['#6366f1', '#f59e0b'];
+const PIE_COLORS = ['var(--chart-primary)', 'var(--chart-accent)'];
 const INSIGHT_COLOR = {
   emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
   blue:    'text-blue-400    bg-blue-500/10    border-blue-500/20',
@@ -512,8 +512,8 @@ const LoanEstimatorPage = () => {
                         tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
                       <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
                       <Legend formatter={(v) => v} />
-                      <Bar dataKey="Principal" fill="#6366f1" radius={[4, 4, 0, 0]} stackId="a" />
-                      <Bar dataKey="Interest"  fill="#f59e0b" radius={[4, 4, 0, 0]} stackId="a" />
+                      <Bar dataKey="Principal" fill="var(--chart-primary)" radius={[4, 4, 0, 0]} stackId="a" />
+                      <Bar dataKey="Interest"  fill="var(--chart-accent)" radius={[4, 4, 0, 0]} stackId="a" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -535,9 +535,9 @@ const LoanEstimatorPage = () => {
                       <YAxis tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`}
                         tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
                       <Tooltip content={<ChartTooltip />} />
-                      <Line type="monotone" dataKey="balance" name="Balance" stroke="#6366f1"
-                        strokeWidth={2.5} dot={{ fill: '#6366f1', r: 3 }} activeDot={{ r: 5 }} />
-                      <Line type="monotone" dataKey="paid" name="Paid So Far" stroke="#10b981"
+                      <Line type="monotone" dataKey="balance" name="Balance" stroke="var(--chart-primary)"
+                        strokeWidth={2.5} dot={{ fill: 'var(--chart-primary)', r: 3 }} activeDot={{ r: 5 }} />
+                      <Line type="monotone" dataKey="paid" name="Paid So Far" stroke="var(--chart-tertiary)"
                         strokeWidth={2} strokeDasharray="5 5" dot={false} />
                     </LineChart>
                   </ResponsiveContainer>

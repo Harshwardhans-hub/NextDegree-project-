@@ -4,6 +4,9 @@ import { Toaster } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { AppProvider } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -30,7 +33,7 @@ const PageTransition = ({ children }) => (
 );
 
 // ── Pages that should hide the Navbar + Footer ────────────────────────────────
-const FULL_SCREEN_ROUTES = ['/login', '/ai-mentor'];
+const FULL_SCREEN_ROUTES = ['/login'];
 
 const AppContent = () => {
   const location = useLocation();
@@ -62,14 +65,16 @@ const AppContent = () => {
           <Routes location={location} key={location.pathname}>
             <Route path="/"              element={<PageTransition><LandingPage /></PageTransition>} />
             <Route path="/login"         element={<PageTransition><LoginPage /></PageTransition>} />
-            <Route path="/dashboard"     element={<PageTransition><Dashboard /></PageTransition>} />
-            <Route path="/profile"       element={<PageTransition><ProfileFormPage /></PageTransition>} />
-            <Route path="/universities"  element={<PageTransition><UniversityRecommendationPage /></PageTransition>} />
-            <Route path="/recommendations" element={<PageTransition><UniversityRecommendationPage /></PageTransition>} />
-            <Route path="/roi-analysis"  element={<PageTransition><ROIAnalysisPage /></PageTransition>} />
-            <Route path="/loan-estimator" element={<PageTransition><LoanEstimatorPage /></PageTransition>} />
-            <Route path="/ai-mentor"     element={<AIMentorChatPage />} />
-            <Route path="/timeline"      element={<PageTransition><TimelinePlannerPage /></PageTransition>} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard"     element={<ProtectedRoute requireProfile><PageTransition><Dashboard /></PageTransition></ProtectedRoute>} />
+            <Route path="/profile"       element={<ProtectedRoute><PageTransition><ProfileFormPage /></PageTransition></ProtectedRoute>} />
+            <Route path="/universities"  element={<ProtectedRoute requireProfile><PageTransition><UniversityRecommendationPage /></PageTransition></ProtectedRoute>} />
+            <Route path="/recommendations" element={<ProtectedRoute requireProfile><PageTransition><UniversityRecommendationPage /></PageTransition></ProtectedRoute>} />
+            <Route path="/roi-analysis"  element={<ProtectedRoute requireProfile><PageTransition><ROIAnalysisPage /></PageTransition></ProtectedRoute>} />
+            <Route path="/loan-estimator" element={<ProtectedRoute requireProfile><PageTransition><LoanEstimatorPage /></PageTransition></ProtectedRoute>} />
+            <Route path="/ai-mentor"     element={<ProtectedRoute requireProfile><AIMentorChatPage /></ProtectedRoute>} />
+            <Route path="/timeline"      element={<ProtectedRoute requireProfile><PageTransition><TimelinePlannerPage /></PageTransition></ProtectedRoute>} />
           </Routes>
         </AnimatePresence>
       </main>
@@ -81,11 +86,15 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AppProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AppProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AppProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

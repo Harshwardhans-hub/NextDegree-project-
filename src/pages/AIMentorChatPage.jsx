@@ -104,7 +104,7 @@ const MessageBubble = ({ msg }) => {
       }`}>
         {isUser
           ? <User className="h-4 w-4 text-gray-300" />
-          : <Sparkles className="h-4 w-4 text-white" />
+          : <Sparkles className="h-4 w-4 text-background" />
         }
       </div>
 
@@ -112,8 +112,8 @@ const MessageBubble = ({ msg }) => {
       <div className={`relative flex flex-col gap-1 max-w-[80%]`}>
         <div className={`px-4 py-3 rounded-2xl text-sm ${
           isUser
-            ? 'bg-primary-600 text-white rounded-tr-none'
-            : 'glass-card text-gray-200 rounded-tl-none border border-white/5'
+            ? 'bg-primary-600 text-background rounded-tr-none'
+            : 'bg-gradient-to-tr from-primary-500 to-accent-500 text-background rounded-tl-none border border-white/5 shadow-md shadow-primary-500/20'
         }`}>
           {isUser
             ? <p className="leading-relaxed">{msg.text}</p>
@@ -265,7 +265,7 @@ const AIMentorChatPage = () => {
         <div className="p-4">
           <button
             onClick={handleNewChat}
-            className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary-600 hover:bg-primary-500 rounded-xl text-white text-sm font-medium transition-colors shadow-lg shadow-primary-500/20"
+            className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary-600 hover:bg-primary-500 rounded-xl text-background text-sm font-medium transition-colors shadow-lg shadow-primary-500/20"
           >
             <MessageSquare className="h-4 w-4" />
             New Chat
@@ -328,8 +328,8 @@ const AIMentorChatPage = () => {
         {/* Header */}
         <header className="px-6 py-3 border-b border-white/5 bg-surface/50 backdrop-blur-md flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-primary-500 to-accent-500 flex items-center justify-center shadow-lg shadow-primary-500/30">
-              <Sparkles className="h-4 w-4 text-white" />
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-primary-500 to-accent-500 flex items-center justify-center shadow-lg shadow-primary-500/30 text-background">
+              <Sparkles className="h-4 w-4" />
             </div>
             <div>
               <h2 className="text-white font-semibold text-sm">NextDegree AI Mentor</h2>
@@ -428,7 +428,7 @@ const AIMentorChatPage = () => {
               <button
                 type="submit"
                 disabled={!input.trim() || isTyping}
-                className="p-3 bg-primary-600 hover:bg-primary-500 disabled:bg-white/5 disabled:text-gray-600 text-white rounded-xl transition-all shrink-0 shadow-lg shadow-primary-500/20"
+                className="p-3 bg-primary-600 hover:bg-primary-500 disabled:bg-white/5 disabled:text-gray-600 text-background rounded-xl transition-all shrink-0 shadow-lg shadow-primary-500/20"
               >
                 {isTyping
                   ? <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

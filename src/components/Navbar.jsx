@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap, Menu, X } from 'lucide-react';
+import { GraduationCap, Menu, X, LogOut, User, Sun, Moon } from 'lucide-react';
 import BackendStatus from './BackendStatus';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, logout, user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const links = [
     { name: 'Home', path: '/' },
     { name: 'Universities', path: '/universities' },
     { name: 'ROI Analysis', path: '/roi-analysis' },
+    { name: 'Loan Estimator', path: '/loan-estimator' },
     { name: 'AI Mentor', path: '/ai-mentor' },
   ];
 
@@ -50,19 +55,45 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <BackendStatus />
-            <Link
-              to="/login"
-              className="px-5 py-2 text-sm font-medium text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10"
+            <button
+              onClick={toggleTheme}
+              className="p-2 mr-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+              title="Toggle theme"
             >
-              Log in
-            </Link>
-            <Link
-              to="/profile"
-              className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 rounded-xl shadow-lg shadow-primary-500/25 transition-all"
-            >
-              Get Started
-            </Link>
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+            {!isAuthenticated ? (
+              <>
+                <Link
+                  to="/login"
+                  className="px-5 py-2 text-sm font-medium text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/login"
+                  className="px-5 py-2 text-sm font-medium text-background bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 rounded-xl shadow-lg shadow-primary-500/25 transition-all"
+                >
+                  Get Started
+                </Link>
+              </>
+            ) : (
+              <div className="flex items-center gap-4 ml-2">
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center border border-primary-500/30">
+                    <User className="h-4 w-4 text-primary-400" />
+                  </div>
+                  <span className="font-medium hidden lg:block">{user?.name}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-colors"
+                  title="Log out"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -96,20 +127,37 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="border-t border-white/10 mt-4 pt-4 pb-2 space-y-2">
-              <Link
-                to="/login"
-                onClick={closeMenu}
-                className="block w-full text-center px-5 py-3 text-base font-medium text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10"
+              <button
+                onClick={toggleTheme}
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 text-base font-medium text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10"
               >
-                Log in
-              </Link>
-              <Link
-                to="/dashboard"
-                onClick={closeMenu}
-                className="block w-full text-center px-5 py-3 text-base font-medium text-white bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 rounded-xl transition-all"
-              >
-                Dashboard
-              </Link>
+                {theme === 'dark' ? <><Sun className="h-5 w-5" /> Light Mode</> : <><Moon className="h-5 w-5" /> Dark Mode</>}
+              </button>
+              {!isAuthenticated ? (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={closeMenu}
+                    className="block w-full text-center px-5 py-3 text-base font-medium text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={closeMenu}
+                    className="block w-full text-center px-5 py-3 text-base font-medium text-background bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 rounded-xl transition-all"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              ) : (
+                <button
+                  onClick={() => { logout(); closeMenu(); }}
+                  className="block w-full text-center px-5 py-3 text-base font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 rounded-xl transition-colors border border-red-400/10"
+                >
+                  Log out
+                </button>
+              )}
             </div>
           </div>
         </div>

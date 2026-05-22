@@ -102,13 +102,13 @@ const LandingPage = () => {
 
           <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             Get personalised university recommendations, ROI analysis, education loan guidance,
-            and 24/7 AI mentorship — all in one platform built for Indian students.
+            and 24/7 AI mentorship — all in one platform.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/profile"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl text-white font-semibold bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 shadow-lg shadow-primary-500/20 transition-all flex items-center justify-center gap-2 group"
+              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 text-background rounded-xl font-semibold text-lg shadow-lg shadow-primary-500/25 transition-all flex items-center justify-center gap-2 group"
             >
               Start Free Analysis
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -122,15 +122,7 @@ const LandingPage = () => {
             </Link>
           </div>
 
-          {/* Trust indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-10 text-xs text-gray-500">
-            {['No account needed', 'Free to use', 'Real Gemini AI', '500+ universities'].map((t) => (
-              <span key={t} className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                {t}
-              </span>
-            ))}
-          </div>
+
         </motion.div>
 
         {/* ── Dashboard preview mock ─────────────────────────────────────── */}
@@ -234,7 +226,6 @@ const LandingPage = () => {
               icon={Brain}
               title="AI Recommendations"
               description="Our engine matches you with universities based on your CGPA, GRE, budget, and country preference."
-              badge="Gemini AI"
               delay={0}
             />
             <FeatureCard
@@ -297,32 +288,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ── Testimonials ────────────────────────────────────────────────── */}
-      <section className="py-20 relative z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-3">Students love it</h2>
-            <p className="text-gray-400 text-sm">Real stories from students who used NextDegree AI</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <TestimonialCard
-              name="Priya Sharma"
-              uni="MS CS · Arizona State University"
-              text="The ROI calculator finally made me understand why ASU was the smarter financial choice over a more expensive school. Saved me ₹15L."
-            />
-            <TestimonialCard
-              name="Rahul Gupta"
-              uni="MBA · Purdue University"
-              text="The AI mentor helped me rewrite my SOP in one evening. I got into my first-choice university. This platform is genuinely incredible."
-            />
-            <TestimonialCard
-              name="Sneha Patel"
-              uni="MEng · University of Toronto"
-              text="As someone considering Canada for PR, the recommendations were spot-on. The EMI calculator helped my family understand the loan repayment clearly."
-            />
-          </div>
-        </div>
-      </section>
+
 
       {/* ── CTA section ────────────────────────────────────────────────── */}
       <section className="py-20 relative z-20">
@@ -341,7 +307,7 @@ const LandingPage = () => {
               </p>
               <Link
                 to="/profile"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-semibold bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 shadow-lg shadow-primary-500/25 transition-all group"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-background font-semibold bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 shadow-lg shadow-primary-500/25 transition-all group"
               >
                 Start Your Free Analysis
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

@@ -45,19 +45,13 @@ const Footer = () => {
           <div>
             <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">Company</h3>
             <ul className="space-y-3 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+              <li>Contact Us: support@nextdegree.ai</li>
+              <li>Phone: +1 (555) 123-4567</li>
             </ul>
           </div>
         </div>
         
-        <div className="mt-12 border-t border-white/5 pt-8 text-center">
-          <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} NextDegree AI. All rights reserved.
-          </p>
-        </div>
+
       </div>
     </footer>
   );

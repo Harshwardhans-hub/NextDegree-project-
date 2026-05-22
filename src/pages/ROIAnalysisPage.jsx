@@ -16,7 +16,7 @@ import {
 import toast from 'react-hot-toast';
 
 // ─── Colour Maps ───────────────────────────────────────────────────────────────
-const PIE_COLORS = ['#6366f1', '#8b5cf6', '#a78bfa'];
+const PIE_COLORS = ['var(--chart-primary)', 'var(--chart-accent)', 'var(--chart-tertiary)'];
 
 const CATEGORY_STYLE = {
   Excellent: { text: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30', bar: '#10B981' },
@@ -108,7 +108,7 @@ const InsightCard = ({ insight, index }) => {
 };
 
 // ─── Compare Panel ─────────────────────────────────────────────────────────────
-const CompareBar = ({ label, valA, valB, colorA = '#6366f1', colorB = '#10B981' }) => {
+const CompareBar = ({ label, valA, valB, colorA = 'var(--chart-primary)', colorB = 'var(--chart-accent)' }) => {
   const max = Math.max(valA, valB, 1);
   return (
     <div className="space-y-1.5">
@@ -206,6 +206,11 @@ const ROIAnalysisPage = () => {
       visa_cost:       form.visa_cost,
       expected_salary: form.expected_salary,
     };
+
+    if (side === 'B' && !resultA) {
+      toast.error('Please analyze University A first!');
+      return;
+    }
 
     if (side === 'A') { setLoadingA(true); setError(''); }
     else               { setLoadingB(true); }
@@ -318,9 +323,7 @@ const ROIAnalysisPage = () => {
             <button
               onClick={() => runAnalysis(formA, 'A')}
               disabled={loadingA}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-primary-600 to-accent-600
-                         hover:from-primary-500 hover:to-accent-500 text-white font-semibold rounded-xl transition-all
-                         disabled:opacity-60 shadow-lg shadow-primary-500/20"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 text-background rounded-xl font-medium shadow-lg shadow-primary-500/20 transition-all disabled:opacity-50"
             >
               {loadingA
                 ? <><Loader2 className="h-4 w-4 animate-spin" /> Calculating…</>
@@ -378,9 +381,8 @@ const ROIAnalysisPage = () => {
 
                 <button
                   onClick={() => runAnalysis(formB, 'B')}
-                  disabled={loadingB}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-emerald-600 to-teal-600
-                             hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl transition-all disabled:opacity-60"
+                  disabled={loadingB || !resultA}
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-background rounded-xl font-medium shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50"
                 >
                   {loadingB
                     ? <><Loader2 className="h-4 w-4 animate-spin" /> Calculating…</>
@@ -460,8 +462,8 @@ const ROIAnalysisPage = () => {
                         <YAxis tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} unit="L" />
                         <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
                         <Legend formatter={(v) => v === 'A' ? (formA.label || 'University A') : (formB.label || 'University B')} />
-                        <Bar dataKey="A" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="B" fill="#10B981" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="A" fill="var(--chart-primary)" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="B" fill="var(--chart-accent)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -547,12 +549,12 @@ const ROIAnalysisPage = () => {
                         <YAxis tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`}
                           tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
                         <Tooltip content={<ChartTooltip unit="" />} />
-                        <Line type="monotone" dataKey="value" name="Salary" stroke="#10B981"
-                          strokeWidth={2.5} dot={{ fill: '#10B981', r: 3 }} activeDot={{ r: 5 }} />
+                        <Line type="monotone" dataKey="value" name="Salary" stroke="var(--chart-primary)"
+                          strokeWidth={2.5} dot={{ fill: 'var(--chart-primary)', r: 3 }} activeDot={{ r: 5 }} />
                         {compareMode && resultB && (
                           <Line type="monotone" data={resultB.salary_projection} dataKey="value"
-                            name="Salary B" stroke="#6366f1" strokeWidth={2} strokeDasharray="5 3"
-                            dot={{ fill: '#6366f1', r: 2 }} />
+                            name="Salary B" stroke="var(--chart-accent)" strokeWidth={2} strokeDasharray="5 3"
+                            dot={{ fill: 'var(--chart-accent)', r: 2 }} />
                         )}
                       </LineChart>
                     </ResponsiveContainer>
@@ -575,7 +577,7 @@ const ROIAnalysisPage = () => {
                         <ReferenceLine y={resultA.total_cost / 100000} stroke="#EF4444"
                           strokeDasharray="4 4" label={{ value: 'Break-even', fill: '#EF4444', fontSize: 10 }} />
                         <Line type="monotone" dataKey="cumulative_salary" name="Cumulative Salary"
-                          stroke="#10B981" strokeWidth={2.5} dot={{ fill: '#10B981', r: 3 }} activeDot={{ r: 5 }} />
+                          stroke="var(--chart-primary)" strokeWidth={2.5} dot={{ fill: 'var(--chart-primary)', r: 3 }} activeDot={{ r: 5 }} />
                         <Line type="monotone" dataKey="total_cost" name="Total Cost"
                           stroke="#EF4444" strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
                       </LineChart>

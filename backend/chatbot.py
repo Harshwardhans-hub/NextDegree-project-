@@ -25,12 +25,21 @@ if not _XAI_READY:
     print("   The AI Mentor will return a placeholder response.")
     print("   Get your key at: https://console.xai.com/")
 else:
-    # Import and configure openai SDK for xAI
+    # Import and configure openai SDK for xAI / Groq
     from openai import OpenAI
-    _client = OpenAI(
-        api_key=XAI_API_KEY,
-        base_url="https://api.xai.com/v1",
-    )
+    
+    if XAI_API_KEY.startswith("gsk_"):
+        _client = OpenAI(
+            api_key=XAI_API_KEY,
+            base_url="https://api.groq.com/openai/v1",
+        )
+        MODEL_NAME = "llama-3.3-70b-versatile"
+    else:
+        _client = OpenAI(
+            api_key=XAI_API_KEY,
+            base_url="https://api.xai.com/v1",
+        )
+        MODEL_NAME = "grok-2-latest"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -126,9 +135,9 @@ def get_mentor_reply(
         # Add the current user message
         messages.append({"role": "user", "content": message.strip()})
 
-        # ── Call Grok API ─────────────────────────────────────────────────────
+        # ── Call Grok/Groq API ─────────────────────────────────────────────────────
         response = _client.chat.completions.create(
-            model="grok-2-latest",
+            model=MODEL_NAME,
             messages=messages,
             temperature=0.7,
             max_tokens=1024,
@@ -183,6 +192,6 @@ def get_mentor_reply(
             status_code=500,
             detail={
                 "error":   "AI service error.",
-                "message": "Something went wrong with the AI mentor. Please try again.",
+                "message": f"Something went wrong with the AI mentor. {str(e)}",
             }
         )
