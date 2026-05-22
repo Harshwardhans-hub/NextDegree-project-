@@ -16,8 +16,8 @@ export const DEMO_PROFILE = {
   ielts_score:       7.5,
   preferred_country: 'USA',
   course_interest:   'Computer Science',
-  budget:            80000,       // USD
-  family_income:     75000,       // USD annual
+  budget:            5000000,     // ₹50L total budget (INR)
+  family_income:     1200000,     // ₹12L annual family income (INR)
 };
 
 // ── Static university cards (shown if API is offline) ────────────────────────

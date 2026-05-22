@@ -6,6 +6,7 @@ import {
 import { getEmiCalculation } from '../api/emiApi';
 import { useApp } from '../context/AppContext';
 import { Calculator, Landmark, Loader2, AlertTriangle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // ── Chart Colors ──────────────────────────────────────────────────────────────
 const PIE_COLORS = ['#6366f1', '#f59e0b'];
@@ -67,6 +68,7 @@ const LoanEstimatorPage = () => {
       } else {
         setError('Backend unavailable. Make sure the server is running on port 8000.');
       }
+      toast.error('Failed to calculate loan EMI.');
     } finally {
       setLoading(false);
     }
@@ -240,7 +242,7 @@ const LoanEstimatorPage = () => {
               <h3 className="text-base font-semibold text-white mb-1">Principal vs Interest</h3>
               <p className="text-xs text-gray-500 mb-6">How your total repayment is split</p>
               <div className="flex flex-col md:flex-row items-center gap-8">
-                <ResponsiveContainer width={200} height={200}>
+                <ResponsiveContainer width={240} height={240} className="min-h-[240px]">
                   <PieChart>
                     <Pie
                       data={result.repayment_breakdown}
@@ -288,26 +290,28 @@ const LoanEstimatorPage = () => {
               <p className="text-xs text-gray-500 mb-6">
                 How your EMI is split between principal and interest each year
               </p>
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={result.amortization} barSize={16} barCategoryGap="20%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
-                  <XAxis
-                    dataKey="year"
-                    tick={{ fill: '#94A3B8', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`}
-                    tick={{ fill: '#94A3B8', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                  <Bar dataKey="Principal" fill="#6366f1" radius={[4, 4, 0, 0]} stackId="a" />
-                  <Bar dataKey="Interest"  fill="#f59e0b" radius={[4, 4, 0, 0]} stackId="a" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="w-full h-72 min-h-[288px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={result.amortization} barSize={16} barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ fill: '#94A3B8', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`}
+                      tick={{ fill: '#94A3B8', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                    <Bar dataKey="Principal" fill="#6366f1" radius={[4, 4, 0, 0]} stackId="a" />
+                    <Bar dataKey="Interest"  fill="#f59e0b" radius={[4, 4, 0, 0]} stackId="a" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
               <div className="flex justify-center gap-6 mt-4">
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <div className="w-3 h-3 rounded-sm bg-indigo-500" /> Principal
@@ -326,42 +330,44 @@ const LoanEstimatorPage = () => {
               <p className="text-xs text-gray-500 mb-6">
                 How your outstanding loan balance reduces year by year
               </p>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={result.repayment_timeline}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
-                  <XAxis
-                    dataKey="year"
-                    tick={{ fill: '#94A3B8', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`}
-                    tick={{ fill: '#94A3B8', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip content={<ChartTooltip />} />
-                  <Line
-                    type="monotone"
-                    dataKey="balance"
-                    name="Balance"
-                    stroke="#6366f1"
-                    strokeWidth={2.5}
-                    dot={{ fill: '#6366f1', r: 3 }}
-                    activeDot={{ r: 5 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="paid"
-                    name="Paid So Far"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    dot={false}
-                  />
-                </LineChart>
+              <div className="w-full h-56 min-h-[224px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={result.repayment_timeline}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ fill: '#94A3B8', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`}
+                      tick={{ fill: '#94A3B8', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Line
+                      type="monotone"
+                      dataKey="balance"
+                      name="Balance"
+                      stroke="#6366f1"
+                      strokeWidth={2.5}
+                      dot={{ fill: '#6366f1', r: 3 }}
+                      activeDot={{ r: 5 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="paid"
+                      name="Paid So Far"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={false}
+                    />
+                  </LineChart>
               </ResponsiveContainer>
+              </div>
             </div>
           )}
 

@@ -73,9 +73,9 @@ const TimelinePlannerPage = () => {
                 className={`relative flex flex-col md:flex-row items-start md:items-center justify-between gap-8 ${isEven ? 'md:flex-row-reverse' : ''}`}
               >
                 {/* Connector Node */}
-                <div className="absolute left-[-5px] md:left-1/2 top-6 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-10 w-4 h-4 rounded-full bg-background border-[3px] flex items-center justify-center
+                <div className={`absolute left-[-5px] md:left-1/2 top-6 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-10 w-4 h-4 rounded-full bg-background border-[3px] flex items-center justify-center
                   ${task.status === 'completed' ? 'border-green-500 bg-green-500/20' : task.status === 'in-progress' ? 'border-primary-500 bg-primary-500/20' : 'border-gray-600'}
-                ">
+                `}>
                 </div>
 
                 <div className="hidden md:block w-5/12"></div>

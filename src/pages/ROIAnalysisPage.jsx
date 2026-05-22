@@ -7,6 +7,7 @@ import {
 import { getRoiAnalysis } from '../api/roiApi';
 import { useApp } from '../context/AppContext';
 import { TrendingUp, Loader2, BadgeCheck, AlertTriangle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // ── Chart Colors ──────────────────────────────────────────────────────────────
 const PIE_COLORS = ['#6366f1', '#8b5cf6', '#a78bfa'];
@@ -73,8 +74,11 @@ const ROIAnalysisPage = () => {
       const data = await getRoiAnalysis(form);
       setResult(data);
       setRoiResult(data);   // persist to global context for Dashboard
+      toast.success('ROI Analysis completed successfully!');
     } catch (err) {
-      setError(err.userMessage || 'Could not connect to the backend. Make sure the server is running on port 8000.');
+      const msg = err.userMessage || 'Could not connect to the backend. Make sure the server is running on port 8000.';
+      setError(msg);
+      toast.error('Failed to calculate ROI.');
     } finally {
       setLoading(false);
     }
@@ -248,7 +252,7 @@ const ROIAnalysisPage = () => {
                 <h3 className="text-base font-semibold text-white mb-1">Cost Breakdown</h3>
                 <p className="text-xs text-gray-500 mb-6">How your total investment is distributed</p>
                 <div className="flex flex-col md:flex-row items-center gap-8">
-                  <ResponsiveContainer width={220} height={220}>
+                  <ResponsiveContainer width={220} height={220} className="min-h-[224px]">
                     <PieChart>
                       <Pie
                         data={result.cost_breakdown}
@@ -300,7 +304,7 @@ const ROIAnalysisPage = () => {
                 <p className="text-xs text-gray-500 mb-6">
                   Projected salary growth over 10 years (3% annual raise applied)
                 </p>
-                <ResponsiveContainer width="100%" height={260}>
+                <ResponsiveContainer width="100%" height={260} className="min-h-[224px]">
                   <LineChart data={result.salary_projection}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
                     <XAxis

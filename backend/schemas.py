@@ -7,6 +7,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
+from typing import Optional
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -68,8 +69,8 @@ class ProfileCreate(BaseModel):
 
 class ProfileResponse(BaseModel):
     """Schema for the success response returned after saving a profile."""
-    message: str = "Profile submitted successfully"
-    profile_id: int = None
+    message:    str           = "Profile submitted successfully"
+    profile_id: Optional[int] = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -13,10 +13,10 @@ const ProfileFormPage = () => {
   const navigate = useNavigate();
   const { setUserProfile, setRecommendations } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [budgetLabel, setBudgetLabel] = useState(50000);
+  const [budgetLabel, setBudgetLabel] = useState(2500000);  // ₹25L default
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-    defaultValues: { budget: 50000 }
+    defaultValues: { budget: 2500000 }  // ₹25L default
   });
 
   // ── Demo mode: pre-fill all fields instantly ──────────────────────────────
@@ -123,20 +123,20 @@ const ProfileFormPage = () => {
 
               <div className="grid grid-cols-1 gap-6">
                 <div className="relative">
-                  <label className="block text-xs font-medium text-gray-400 mb-1">Family Income (Annual USD)</label>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Annual Family Income (INR)</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Users className="h-5 w-5 text-gray-500" />
                     </div>
-                    <select 
-                      {...register("family_income", { required: "Family income is required" })}
+                    <select
+                      {...register("family_income", { required: "Family income is required", valueAsNumber: true })}
                       className={`block w-full pl-10 pr-3 py-2.5 bg-surface border ${errors.family_income ? 'border-red-500' : 'border-white/10'} rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all`}
                     >
-                      <option value="">Select range</option>
-                      <option value="15000">Under $20,000</option>
-                      <option value="35000">$20,000 - $50,000</option>
-                      <option value="75000">$50,000 - $100,000</option>
-                      <option value="120000">Over $100,000</option>
+                      <option value="">Select income range</option>
+                      <option value="300000">₹3L – ₹5L / year</option>
+                      <option value="700000">₹5L – ₹10L / year</option>
+                      <option value="1200000">₹10L – ₹20L / year</option>
+                      <option value="2500000">₹20L+ / year</option>
                     </select>
                   </div>
                   {errors.family_income && <span className="text-red-400 text-xs mt-1 block">{errors.family_income.message}</span>}
@@ -230,20 +230,22 @@ const ProfileFormPage = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-400 mb-3 flex justify-between">
-                  <span>Total Budget (Tuition + Living)</span>
-                  <span className="text-primary-400 font-bold">${budgetLabel.toLocaleString()}</span>
+                  <span>Total Budget (Tuition + Living, in INR)</span>
+                  <span className="text-primary-400 font-bold">
+                    ₹{(budgetLabel / 100000).toFixed(1)}L
+                  </span>
                 </label>
-                <input 
-                  type="range" 
-                  min="20000" 
-                  max="150000" 
-                  step="5000"
-                  {...register("budget", { onChange: (e) => setBudgetLabel(Number(e.target.value)) })}
-                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary-500" 
+                <input
+                  type="range"
+                  min="1000000"
+                  max="8000000"
+                  step="500000"
+                  {...register("budget", { valueAsNumber: true, onChange: (e) => setBudgetLabel(Number(e.target.value)) })}
+                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary-500"
                 />
                 <div className="flex justify-between text-xs text-gray-500 mt-2">
-                  <span>$20k</span>
-                  <span>$150k+</span>
+                  <span>₹10L</span>
+                  <span>₹80L</span>
                 </div>
               </div>
             </div>
