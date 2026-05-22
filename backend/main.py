@@ -38,10 +38,10 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# ── CORS — allow the React frontend on localhost:5173 ─────────────────────────
+# ── CORS — allow the React frontend on localhost and production ──────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "https://nextdegree-frontend.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
