@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { User, Mail, Globe, BookOpen, Users, Loader2, Zap } from 'lucide-react';
+import { User, Mail, Globe, BookOpen, Users, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { submitProfile } from '../api/profileApi';
 import { getRecommendations } from '../api/recommendationApi';
 import { useApp } from '../context/AppContext';
-import { DEMO_PROFILE } from '../utils/demoData';
+
 import FormInput from '../components/FormInput';
 
 const ProfileFormPage = () => {
@@ -19,12 +19,6 @@ const ProfileFormPage = () => {
     defaultValues: { budget: 2500000 }  // ₹25L default
   });
 
-  // ── Demo mode: pre-fill all fields instantly ──────────────────────────────
-  const fillDemoData = () => {
-    Object.entries(DEMO_PROFILE).forEach(([key, val]) => setValue(key, val));
-    setBudgetLabel(DEMO_PROFILE.budget);
-    toast.success('Demo profile loaded! Hit Analyze to see recommendations.');
-  };
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -81,15 +75,7 @@ const ProfileFormPage = () => {
           <p className="text-gray-400 text-sm">
             Our AI uses this data to recommend the best universities and financial options for you.
           </p>
-          {/* Demo fill button */}
-          <button
-            type="button"
-            onClick={fillDemoData}
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-400 text-xs font-semibold hover:bg-amber-500/20 transition-colors"
-          >
-            <Zap className="h-3.5 w-3.5" />
-            Load Demo Profile (for presentation)
-          </button>
+
         </div>
 
         <div className="glass-card p-8 md:p-10">
