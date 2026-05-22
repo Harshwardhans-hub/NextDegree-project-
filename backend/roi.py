@@ -90,25 +90,25 @@ def calculate_roi(
     monthly_salary = round(expected_salary / 12)
 
     return {
-        # ── Core Results ──────────────────────────────────────────────────────
+        # ── Core Results ───────────────────────────────────────────────
         "total_cost":       round(total_cost),
         "roi_percentage":   roi_percentage,
         "break_even_years": break_even_years,
         "roi_category":     roi_category,
 
-        # ── Formatted Strings (for display cards) ────────────────────────────
+        # ── Formatted Strings (for display cards) ────────────────────────
         "total_cost_fmt":       _fmt(total_cost),
         "expected_salary_fmt":  _fmt(expected_salary),
         "monthly_salary_fmt":   _fmt(monthly_salary),
         "net_gain_10yr_fmt":    _fmt(max(net_gain_10yr, 0)),
 
-        # ── Cost Breakdown (for Pie Chart) ────────────────────────────────────
+        # ── Cost Breakdown (for Pie Chart) ────────────────────────────
         "cost_breakdown": cost_breakdown,
 
-        # ── Salary Projection (for Line Chart) ───────────────────────────────
+        # ── Salary Projection (for Line Chart) ────────────────────────
         "salary_projection": salary_projection,
 
-        # ── Summary object for dashboard cards ───────────────────────────────
+        # ── Summary object for dashboard cards ─────────────────────────
         "summary": {
             "total_cost":       _fmt(total_cost),
             "roi_percentage":   f"{roi_percentage}%",
@@ -118,14 +118,145 @@ def calculate_roi(
             "net_gain_10yr":    _fmt(max(net_gain_10yr, 0)),
         },
 
-        # ── Analytics metadata for charts ────────────────────────────────────
+        # ── Analytics metadata for charts ────────────────────────────
         "analytics": {
             "tuition_pct":    round((tuition_fees / total_cost) * 100, 1),
             "living_pct":     round((living_cost  / total_cost) * 100, 1),
             "visa_pct":       round((visa_cost    / total_cost) * 100, 1),
             "salary_vs_cost": round(expected_salary / total_cost, 2),
         },
+
+        # ── Smart Financial Insights (new) ──────────────────────────────
+        "financial_insights": _build_insights(
+            roi_percentage, break_even_years, total_cost,
+            tuition_fees, living_cost, expected_salary
+        ),
+
+        # ── Cumulative salary-vs-cost recovery chart (new) ───────────────
+        "recovery_chart": [
+            {
+                "year":            f"Yr {yr}",
+                "cumulative_salary": round(expected_salary * (1.03 ** yr) * yr / 100000, 1),
+                "total_cost":        round(total_cost / 100000, 1),
+            }
+            for yr in range(1, 11)
+        ],
     }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helper: Smart Financial Insights Generator
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _build_insights(
+    roi_pct: float,
+    break_even: float,
+    total_cost: float,
+    tuition: float,
+    living: float,
+    salary: float,
+) -> list[dict]:
+    """
+    Generates 4-6 human-readable financial insight bullets
+    displayed as insight cards on the frontend dashboard.
+    """
+    insights = []
+
+    # ROI insight
+    if roi_pct > 100:
+        insights.append({
+            "icon": "trending-up",
+            "color": "emerald",
+            "title": "Excellent long-term ROI",
+            "body": f"With a {roi_pct}% ROI, this investment pays back more than double its cost over your career.",
+        })
+    elif roi_pct >= 60:
+        insights.append({
+            "icon": "trending-up",
+            "color": "blue",
+            "title": "Good return on investment",
+            "body": f"A {roi_pct}% ROI indicates a solid financial outcome for this degree path.",
+        })
+    else:
+        insights.append({
+            "icon": "alert-circle",
+            "color": "amber",
+            "title": "Moderate ROI",
+            "body": f"At {roi_pct}% ROI, consider negotiating scholarships or part-time income to improve returns.",
+        })
+
+    # Break-even insight
+    if break_even <= 1.5:
+        insights.append({
+            "icon": "zap",
+            "color": "emerald",
+            "title": "Very fast break-even",
+            "body": f"You will recover your total investment in just {break_even} years — exceptionally fast.",
+        })
+    elif break_even <= 3:
+        insights.append({
+            "icon": "clock",
+            "color": "blue",
+            "title": f"Break-even in {break_even} years",
+            "body": "Your post-degree salary will recover the full investment within 3 years.",
+        })
+    else:
+        insights.append({
+            "icon": "clock",
+            "color": "amber",
+            "title": f"Break-even takes {break_even} years",
+            "body": "Consider high-salary job roles or scholarships to accelerate cost recovery.",
+        })
+
+    # Living cost insight
+    living_pct = round((living / total_cost) * 100, 1)
+    if living_pct < 25:
+        insights.append({
+            "icon": "home",
+            "color": "emerald",
+            "title": "Low living expenses",
+            "body": f"Living costs are only {living_pct}% of your total investment — very manageable.",
+        })
+    elif living_pct < 40:
+        insights.append({
+            "icon": "home",
+            "color": "blue",
+            "title": "Moderate living costs",
+            "body": f"Living expenses account for {living_pct}% of total cost — within normal range for international students.",
+        })
+    else:
+        insights.append({
+            "icon": "home",
+            "color": "amber",
+            "title": "High living expenses",
+            "body": f"Living costs are {living_pct}% of your total budget. Look for on-campus housing or student accommodation.",
+        })
+
+    # Salary insight
+    salary_vs_cost = round(salary / total_cost, 2)
+    if salary_vs_cost >= 2:
+        insights.append({
+            "icon": "dollar-sign",
+            "color": "emerald",
+            "title": "Strong salary-to-cost ratio",
+            "body": f"Your expected salary is {salary_vs_cost}x your total investment — a strong financial position.",
+        })
+    elif salary_vs_cost >= 1:
+        insights.append({
+            "icon": "dollar-sign",
+            "color": "blue",
+            "title": "Salary covers full cost annually",
+            "body": f"Your first-year salary can cover the entire investment cost ({salary_vs_cost}x ratio).",
+        })
+    else:
+        insights.append({
+            "icon": "alert-circle",
+            "color": "red",
+            "title": "Salary below total cost",
+            "body": "Consider targeting higher-salary roles or applying for merit-based scholarships.",
+        })
+
+    return insights
 
 
 # ─────────────────────────────────────────────────────────────────────────────

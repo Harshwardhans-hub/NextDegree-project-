@@ -72,6 +72,12 @@ def calculate_emi(
             "label":   _fmt(max(balance, 0)),
         })
 
+    # ── Smart Loan Insights ───────────────────────────────────────────────────
+    loan_insights = _build_loan_insights(
+        monthly_emi, loan_amount, interest_rate,
+        duration_years, total_interest, interest_pct
+    )
+
     return {
         # ── Core EMI Results ──────────────────────────────────────────────────
         "monthly_emi":      monthly_emi,
@@ -121,6 +127,9 @@ def calculate_emi(
 
         # ── Bank Suggestions (for Table) ─────────────────────────────────────
         "bank_suggestions": bank_suggestions,
+
+        # ── Smart Loan Insights (new) ─────────────────────────────────────────
+        "loan_insights": loan_insights,
     }
 
 
@@ -166,6 +175,105 @@ def _build_amortization(
             yr_interest_paid  = 0.0
 
     return schedule
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helper: Smart Loan Insights Generator
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _build_loan_insights(
+    monthly_emi: float,
+    loan_amount: float,
+    interest_rate: float,
+    duration_years: int,
+    total_interest: float,
+    interest_pct: float,
+) -> list:
+    """
+    Generates 3-4 smart financial insights based on the EMI calculation results.
+    """
+    insights = []
+
+    # EMI affordability (rough rule: EMI < 40% of ₹8L/year = ₹26,667/mo is comfortable)
+    emi_monthly = monthly_emi
+    if emi_monthly <= 20000:
+        insights.append({
+            "color": "emerald",
+            "icon": "check-circle",
+            "title": "Very affordable EMI",
+            "body": f"Monthly EMI of {_fmt(emi_monthly)} is well within a comfortable repayment range for most graduates.",
+        })
+    elif emi_monthly <= 40000:
+        insights.append({
+            "color": "blue",
+            "icon": "trending-up",
+            "title": "Manageable EMI",
+            "body": f"{_fmt(emi_monthly)}/month is manageable — aim for a starting salary of at least {_fmt(emi_monthly * 3)} per month to stay comfortable.",
+        })
+    else:
+        insights.append({
+            "color": "amber",
+            "icon": "alert-circle",
+            "title": "High EMI — plan carefully",
+            "body": f"EMI of {_fmt(emi_monthly)}/month is significant. Ensure your expected salary can cover at least 3x the EMI amount.",
+        })
+
+    # Interest burden
+    if interest_pct <= 40:
+        insights.append({
+            "color": "emerald",
+            "icon": "dollar-sign",
+            "title": "Low interest burden",
+            "body": f"You pay {interest_pct}% extra in interest — a healthy ratio for an education loan of this size.",
+        })
+    elif interest_pct <= 70:
+        insights.append({
+            "color": "blue",
+            "icon": "dollar-sign",
+            "title": "Moderate interest cost",
+            "body": f"Total interest ({interest_pct}% of principal) is typical for this tenure. Prepaying 2-3 EMIs yearly can save significantly.",
+        })
+    else:
+        insights.append({
+            "color": "amber",
+            "icon": "alert-circle",
+            "title": "High interest over tenure",
+            "body": f"Interest adds {interest_pct}% to your principal over {duration_years} years. Consider a shorter tenure or lower rate.",
+        })
+
+    # Rate tip
+    if interest_rate > 11:
+        insights.append({
+            "color": "blue",
+            "icon": "zap",
+            "title": "Rate reduction could save you significantly",
+            "body": f"Reducing your rate to 10% could save approx. {_fmt(loan_amount * (interest_rate - 10) / 100 * duration_years * 0.6)} over the loan tenure.",
+        })
+    else:
+        insights.append({
+            "color": "emerald",
+            "icon": "check-circle",
+            "title": "Competitive interest rate",
+            "body": f"{interest_rate}% is among the best rates available for education loans. SBI and PNB are worth approaching first.",
+        })
+
+    # Duration tip
+    if duration_years >= 12:
+        insights.append({
+            "color": "blue",
+            "icon": "clock",
+            "title": "Long tenure — consider prepayment",
+            "body": f"Over {duration_years} years, small prepayments can cut 2-3 years off your loan. Most banks allow part-prepayment without penalty.",
+        })
+    else:
+        insights.append({
+            "color": "emerald",
+            "icon": "clock",
+            "title": f"Good tenure choice",
+            "body": f"{duration_years} years keeps your repayment manageable while minimising total interest outgo.",
+        })
+
+    return insights[:4]  # Return max 4 insights
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -1,12 +1,12 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# chatbot.py — Gemini AI Mentor Service for NextDegree AI
+# chatbot.py — Grok AI Mentor Service for NextDegree AI
 #
-# Uses the new google-genai SDK (replaces deprecated google-generativeai)
+# Uses the openai SDK pointed to xAI's API endpoint.
 #
 # SETUP:
-#   1. Get a free API key at: https://aistudio.google.com/app/apikey
-#   2. Add to backend/.env:  GEMINI_API_KEY=your_key_here
-#   3. Run: py -m pip install google-genai python-dotenv
+#   1. Get a key at: https://console.xai.com/
+#   2. Add to backend/.env:  XAI_API_KEY=your_key_here
+#   3. Run: py -m pip install openai python-dotenv
 # ─────────────────────────────────────────────────────────────────────────────
 
 import os
@@ -15,20 +15,22 @@ from fastapi import HTTPException
 
 # ── Load environment variables from backend/.env ──────────────────────────────
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+XAI_API_KEY = os.getenv("XAI_API_KEY", "")
 
 # ── Check if API key is configured ────────────────────────────────────────────
-_GEMINI_READY = bool(GEMINI_API_KEY and GEMINI_API_KEY != "your_gemini_api_key_here")
+_XAI_READY = bool(XAI_API_KEY and XAI_API_KEY != "your_xai_api_key_here")
 
-if not _GEMINI_READY:
-    print("WARNING: GEMINI_API_KEY is not set in backend/.env")
+if not _XAI_READY:
+    print("WARNING: XAI_API_KEY is not set in backend/.env")
     print("   The AI Mentor will return a placeholder response.")
-    print("   Get your free key at: https://aistudio.google.com/app/apikey")
+    print("   Get your key at: https://console.xai.com/")
 else:
-    # Import and configure google-genai SDK
-    from google import genai
-    from google.genai import types
-    _client = genai.Client(api_key=GEMINI_API_KEY)
+    # Import and configure openai SDK for xAI
+    from openai import OpenAI
+    _client = OpenAI(
+        api_key=XAI_API_KEY,
+        base_url="https://api.xai.com/v1",
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -72,7 +74,7 @@ def get_mentor_reply(
     chat_history: list[dict] | None = None,
 ) -> str:
     """
-    Sends the student's message to Gemini and returns the AI mentor's reply.
+    Sends the student's message to Grok and returns the AI mentor's reply.
 
     Args:
         message      : The student's current question or message
@@ -85,16 +87,16 @@ def get_mentor_reply(
     Raises:
         HTTPException 400 : If message is empty
         HTTPException 429 : If API quota exceeded
-        HTTPException 500 : If Gemini call fails
+        HTTPException 500 : If API call fails
     """
 
     # ── Fallback when API key is not configured ───────────────────────────────
-    if not _GEMINI_READY:
+    if not _XAI_READY:
         return (
             "Hi! I'm NextDegree AI, your study abroad mentor. "
             "The AI backend is not connected yet (API key missing in backend/.env). "
-            "Get a free Gemini API key at https://aistudio.google.com/app/apikey and "
-            "add it to backend/.env as GEMINI_API_KEY=your_key. "
+            "Get a Grok API key at https://console.xai.com/ and "
+            "add it to backend/.env as XAI_API_KEY=your_key. "
             "Once configured, I can help with university comparisons, GRE tips, "
             "loan planning, ROI analysis, and much more!"
         )
@@ -110,42 +112,30 @@ def get_mentor_reply(
         )
 
     try:
-        # ── Build conversation history in Gemini Content format ───────────────
-        contents = []
+        # ── Build conversation history in OpenAI format ───────────────────────
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
         if chat_history:
             for turn in chat_history:
-                role = turn.get("role", "user")
+                # Convert 'model' back to 'assistant' for OpenAI API format
+                role = "assistant" if turn.get("role") == "model" else "user"
                 text = turn.get("text", "").strip()
-                if role in ("user", "model") and text:
-                    contents.append(
-                        types.Content(
-                            role=role,
-                            parts=[types.Part(text=text)],
-                        )
-                    )
+                if role in ("user", "assistant") and text:
+                    messages.append({"role": role, "content": text})
 
         # Add the current user message
-        contents.append(
-            types.Content(
-                role="user",
-                parts=[types.Part(text=message.strip())],
-            )
-        )
+        messages.append({"role": "user", "content": message.strip()})
 
-        # ── Call Gemini API ───────────────────────────────────────────────────
-        response = _client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=contents,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                temperature=0.75,        # Slightly creative but grounded
-                max_output_tokens=1024,  # Keep responses concise
-            ),
+        # ── Call Grok API ─────────────────────────────────────────────────────
+        response = _client.chat.completions.create(
+            model="grok-2-latest",
+            messages=messages,
+            temperature=0.7,
+            max_tokens=1024,
         )
 
         # ── Extract reply ─────────────────────────────────────────────────────
-        reply = response.text.strip() if response.text else ""
+        reply = response.choices[0].message.content.strip()
 
         if not reply:
             raise HTTPException(
@@ -161,13 +151,13 @@ def get_mentor_reply(
     except Exception as e:
         err = str(e).lower()
 
-        if "api_key" in err or "api key" in err or "invalid" in err:
+        if "api_key" in err or "api key" in err or "unauthorized" in err or "401" in err:
             raise HTTPException(
                 status_code=500,
                 detail={
-                    "error":   "Invalid Gemini API key.",
-                    "message": "Check your GEMINI_API_KEY in backend/.env",
-                    "help":    "Get a free key at https://aistudio.google.com/app/apikey",
+                    "error":   "Invalid Grok API key.",
+                    "message": "Check your XAI_API_KEY in backend/.env",
+                    "help":    "Get a key at https://console.xai.com/",
                 }
             )
 
@@ -176,7 +166,7 @@ def get_mentor_reply(
                 status_code=429,
                 detail={
                     "error":   "API quota exceeded.",
-                    "message": "You have hit the Gemini free-tier limit. Please wait and try again.",
+                    "message": "You have hit the Grok API limit. Please wait and try again.",
                 }
             )
 
