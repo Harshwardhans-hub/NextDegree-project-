@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { GraduationCap, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { GraduationCap, Mail, Lock, ArrowRight, Loader2, ShieldCheck, RefreshCw, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { auth, googleProvider } from '../config/firebase';
 import { signInWithPopup } from 'firebase/auth';
@@ -37,10 +37,17 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    if (!isLogin) {
-      generateCaptcha();
-    }
-  }, [isLogin]);
+    generateCaptcha();
+  }, []);
+
+  const getCorrectAnswer = () => {
+    if (captchaMath.operator === '+') return captchaMath.num1 + captchaMath.num2;
+    if (captchaMath.operator === '-') return captchaMath.num1 - captchaMath.num2;
+    if (captchaMath.operator === '*') return captchaMath.num1 * captchaMath.num2;
+    return 0;
+  };
+  
+  const isCaptchaValid = captchaInput !== '' && parseInt(captchaInput) === getCorrectAnswer();
 
   if (isAuthenticated) {
     return <Navigate to="/profile" replace />;
@@ -75,17 +82,6 @@ const LoginPage = () => {
         toast.success(`Welcome back!`);
       } else {
         if (!formData.name) throw new Error("Name is required");
-        
-        let correctAnswer = 0;
-        if (captchaMath.operator === '+') correctAnswer = captchaMath.num1 + captchaMath.num2;
-        if (captchaMath.operator === '-') correctAnswer = captchaMath.num1 - captchaMath.num2;
-        if (captchaMath.operator === '*') correctAnswer = captchaMath.num1 * captchaMath.num2;
-        
-        if (parseInt(captchaInput) !== correctAnswer) {
-          generateCaptcha();
-          throw new Error("Incorrect math CAPTCHA. Please try again.");
-        }
-
         await signup(formData.email, formData.password, formData.name);
         toast.success(`Account created successfully!`);
       }
@@ -156,24 +152,6 @@ const LoginPage = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-300 ml-1">
-                      Security Check: What is {captchaMath.num1} {captchaMath.operator} {captchaMath.num2}?
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Lock className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <input
-                        type="number"
-                        required={!isLogin}
-                        className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all"
-                        placeholder="Your answer"
-                        value={captchaInput}
-                        onChange={(e) => setCaptchaInput(e.target.value)}
-                      />
-                    </div>
-                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -215,10 +193,42 @@ const LoginPage = () => {
               </div>
             </div>
 
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                  <ShieldCheck className="w-4 h-4 text-primary-400" />
+                  Human Verification
+                </div>
+                <button 
+                  type="button" 
+                  onClick={generateCaptcha}
+                  className="p-1 hover:bg-white/10 rounded-md transition-colors text-gray-400 hover:text-white"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="flex gap-3 h-12">
+                <div className="flex-1 bg-white/10 border border-white/5 rounded-xl flex items-center justify-center font-bold text-white tracking-widest text-lg">
+                  {captchaMath.num1} {captchaMath.operator} {captchaMath.num2} = ?
+                </div>
+                <input
+                  type="number"
+                  className="w-24 bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-center text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium no-spinners"
+                  placeholder="Result"
+                  value={captchaInput}
+                  onChange={(e) => setCaptchaInput(e.target.value)}
+                />
+                <div className={`w-16 flex-shrink-0 rounded-xl flex items-center justify-center transition-colors ${isCaptchaValid ? 'bg-green-500/20 border border-green-500/50' : 'bg-white/5 border border-white/10'}`}>
+                   {isCaptchaValid && <Check className="w-5 h-5 text-green-400" />}
+                </div>
+              </div>
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
-              className="w-full py-3.5 mt-6 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 text-background rounded-xl font-medium shadow-lg shadow-primary-500/25 transition-all flex items-center justify-center gap-2 group disabled:opacity-70"
+              disabled={loading || !isCaptchaValid}
+              className="w-full py-3.5 mt-4 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 text-background rounded-xl font-medium shadow-lg shadow-primary-500/25 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -240,8 +250,8 @@ const LoginPage = () => {
             <button
               type="button"
               onClick={handleGoogleSuccess}
-              disabled={loading}
-              className="w-full py-3.5 mt-4 bg-surface border border-white/10 hover:bg-white/5 text-white rounded-xl font-medium shadow-lg transition-all flex items-center justify-center gap-2 group disabled:opacity-70"
+              disabled={loading || !isCaptchaValid}
+              className="w-full py-3.5 mt-4 bg-surface border border-white/10 hover:bg-white/5 text-white rounded-xl font-medium shadow-lg transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
