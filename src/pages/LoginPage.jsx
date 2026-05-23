@@ -194,7 +194,6 @@ const LoginPage = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
                 <label className="text-sm font-medium text-gray-300">Password</label>
-                {isLogin && <a href="#" className="text-xs text-primary-400 hover:text-primary-300">Forgot?</a>}
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
