@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { GraduationCap, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
@@ -19,6 +19,28 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
+  
+  const [captchaMath, setCaptchaMath] = useState({ num1: 0, num2: 0, operator: '+' });
+  const [captchaInput, setCaptchaInput] = useState('');
+
+  const generateCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const operators = ['+', '-', '*'];
+    const operator = operators[Math.floor(Math.random() * operators.length)];
+    if (operator === '-' && num1 < num2) {
+      setCaptchaMath({ num1: num2, num2: num1, operator });
+    } else {
+      setCaptchaMath({ num1, num2, operator });
+    }
+    setCaptchaInput('');
+  };
+
+  useEffect(() => {
+    if (!isLogin) {
+      generateCaptcha();
+    }
+  }, [isLogin]);
 
   if (isAuthenticated) {
     return <Navigate to="/profile" replace />;
@@ -53,6 +75,17 @@ const LoginPage = () => {
         toast.success(`Welcome back!`);
       } else {
         if (!formData.name) throw new Error("Name is required");
+        
+        let correctAnswer = 0;
+        if (captchaMath.operator === '+') correctAnswer = captchaMath.num1 + captchaMath.num2;
+        if (captchaMath.operator === '-') correctAnswer = captchaMath.num1 - captchaMath.num2;
+        if (captchaMath.operator === '*') correctAnswer = captchaMath.num1 * captchaMath.num2;
+        
+        if (parseInt(captchaInput) !== correctAnswer) {
+          generateCaptcha();
+          throw new Error("Incorrect math CAPTCHA. Please try again.");
+        }
+
         await signup(formData.email, formData.password, formData.name);
         toast.success(`Account created successfully!`);
       }
@@ -104,21 +137,42 @@ const LoginPage = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="space-y-2"
+                  className="space-y-4"
                 >
-                  <label className="text-sm font-medium text-gray-300 ml-1">Full Name</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <div className="w-4 h-4 rounded-full border border-gray-400" />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-300 ml-1">Full Name</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <div className="w-4 h-4 rounded-full border border-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        required={!isLogin}
+                        className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all"
+                        placeholder="Jane Doe"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      />
                     </div>
-                    <input
-                      type="text"
-                      required={!isLogin}
-                      className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all"
-                      placeholder="Jane Doe"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-300 ml-1">
+                      Security Check: What is {captchaMath.num1} {captchaMath.operator} {captchaMath.num2}?
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Lock className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input
+                        type="number"
+                        required={!isLogin}
+                        className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/20 hover:border-white/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all"
+                        placeholder="Your answer"
+                        value={captchaInput}
+                        onChange={(e) => setCaptchaInput(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </motion.div>
               )}
