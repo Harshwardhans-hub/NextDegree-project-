@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { GraduationCap, Mail, Lock, ArrowRight, Loader2, ShieldCheck, RefreshCw, Check } from 'lucide-react';
+import { GraduationCap, Mail, Lock, ArrowRight, Loader2, ShieldCheck, RefreshCw, Check, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { auth, googleProvider } from '../config/firebase';
 import { signInWithPopup } from 'firebase/auth';
@@ -22,6 +22,8 @@ const LoginPage = () => {
   
   const [captchaMath, setCaptchaMath] = useState({ num1: 0, num2: 0, operator: '+' });
   const [captchaInput, setCaptchaInput] = useState('');
+  const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+  const [captchaError, setCaptchaError] = useState(false);
 
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
@@ -34,6 +36,8 @@ const LoginPage = () => {
       setCaptchaMath({ num1, num2, operator });
     }
     setCaptchaInput('');
+    setIsCaptchaVerified(false);
+    setCaptchaError(false);
   };
 
   useEffect(() => {
@@ -47,7 +51,21 @@ const LoginPage = () => {
     return 0;
   };
   
-  const isCaptchaValid = captchaInput !== '' && parseInt(captchaInput) === getCorrectAnswer();
+  const handleVerifyCaptcha = () => {
+    if (captchaInput !== '' && parseInt(captchaInput) === getCorrectAnswer()) {
+      setIsCaptchaVerified(true);
+      setCaptchaError(false);
+    } else {
+      setIsCaptchaVerified(false);
+      setCaptchaError(true);
+    }
+  };
+
+  const handleCaptchaChange = (e) => {
+    setCaptchaInput(e.target.value);
+    setIsCaptchaVerified(false);
+    setCaptchaError(false);
+  };
 
   if (isAuthenticated) {
     return <Navigate to="/profile" replace />;
@@ -217,14 +235,27 @@ const LoginPage = () => {
                   className="flex-1 bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-center text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium no-spinners"
                   placeholder="Result"
                   value={captchaInput}
-                  onChange={(e) => setCaptchaInput(e.target.value)}
+                  onChange={handleCaptchaChange}
                 />
+                <button
+                  type="button"
+                  onClick={handleVerifyCaptcha}
+                  className={`flex-shrink-0 px-4 rounded-xl flex items-center justify-center transition-colors ${
+                    isCaptchaVerified 
+                      ? 'bg-green-500/20 border border-green-500/50 text-green-400' 
+                      : captchaError
+                        ? 'bg-red-500/20 border border-red-500/50 text-red-400'
+                        : 'bg-white/10 hover:bg-white/20 border border-white/10 text-white font-medium text-sm'
+                  }`}
+                >
+                  {isCaptchaVerified ? <Check className="w-5 h-5" /> : captchaError ? <X className="w-5 h-5" /> : 'Verify'}
+                </button>
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={loading || !isCaptchaValid}
+              disabled={loading || !isCaptchaVerified}
               className="w-full py-3.5 mt-4 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 text-background rounded-xl font-medium shadow-lg shadow-primary-500/25 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
@@ -247,7 +278,7 @@ const LoginPage = () => {
             <button
               type="button"
               onClick={handleGoogleSuccess}
-              disabled={loading || !isCaptchaValid}
+              disabled={loading || !isCaptchaVerified}
               className="w-full py-3.5 mt-4 bg-surface border border-white/10 hover:bg-white/5 text-white rounded-xl font-medium shadow-lg transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
