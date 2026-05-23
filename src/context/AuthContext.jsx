@@ -1,4 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { auth } from '../config/firebase';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -9,46 +17,48 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check session storage on mount
-    const savedUser = sessionStorage.getItem('nd_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({
+          email: currentUser.email,
+          name: currentUser.displayName,
+          id: currentUser.uid,
+          picture: currentUser.photoURL
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe; // Cleanup subscription on unmount
   }, []);
 
   const login = (email, password) => {
-    // Simulated login - in a real app, verify with backend
-    const mockUser = { email, name: email.split('@')[0], id: Date.now() };
-    setUser(mockUser);
-    sessionStorage.setItem('nd_user', JSON.stringify(mockUser));
-    return true;
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signup = (email, password, name) => {
-    // Simulated signup
-    const mockUser = { email, name, id: Date.now() };
-    setUser(mockUser);
-    sessionStorage.setItem('nd_user', JSON.stringify(mockUser));
-    return true;
-  };
-
-  const googleLogin = (decodedToken) => {
-    // Extract info from Google JWT
-    const mockUser = { 
-      email: decodedToken.email, 
-      name: decodedToken.name, 
-      id: decodedToken.sub || Date.now(),
-      picture: decodedToken.picture
-    };
-    setUser(mockUser);
-    sessionStorage.setItem('nd_user', JSON.stringify(mockUser));
-    return true;
+  const signup = async (email, password, name) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Update the profile with the user's name
+    await updateProfile(userCredential.user, {
+      displayName: name
+    });
+    
+    // Force a local state update to immediately reflect the newly added displayName
+    setUser({
+      email: userCredential.user.email,
+      name: name,
+      id: userCredential.user.uid,
+      picture: userCredential.user.photoURL
+    });
+    
+    return userCredential;
   };
 
   const logout = () => {
-    setUser(null);
-    sessionStorage.removeItem('nd_user');
+    return signOut(auth);
   };
 
   const value = {
@@ -56,7 +66,6 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     login,
     signup,
-    googleLogin,
     logout,
     loading
   };

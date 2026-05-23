@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { login, signup, googleLogin, isAuthenticated } = useAuth();
+  const { login, signup, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,17 +27,7 @@ const LoginPage = () => {
   const handleGoogleSuccess = async () => {
     try {
       setLoading(true);
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      
-      const userInfo = {
-        email: user.email,
-        name: user.displayName,
-        sub: user.uid,
-        picture: user.photoURL
-      };
-      
-      googleLogin(userInfo);
+      await signInWithPopup(auth, googleProvider);
       toast.success('Successfully logged in with Google!');
       navigate(location.state?.from?.pathname || '/profile', { replace: true });
     } catch (err) {
@@ -58,21 +48,24 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-
       if (isLogin) {
-        login(formData.email, formData.password);
+        await login(formData.email, formData.password);
         toast.success(`Welcome back!`);
       } else {
         if (!formData.name) throw new Error("Name is required");
-        signup(formData.email, formData.password, formData.name);
+        await signup(formData.email, formData.password, formData.name);
         toast.success(`Account created successfully!`);
       }
       
       navigate(from, { replace: true });
     } catch (err) {
-      toast.error(err.message || 'Authentication failed');
+      let msg = err.message || 'Authentication failed';
+      if (err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
+      if (err.code === 'auth/user-not-found') msg = 'No account found with this email.';
+      if (err.code === 'auth/wrong-password') msg = 'Incorrect password.';
+      if (err.code === 'auth/email-already-in-use') msg = 'An account with this email already exists.';
+      if (err.code === 'auth/weak-password') msg = 'Password should be at least 6 characters.';
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
