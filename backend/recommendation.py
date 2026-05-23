@@ -189,7 +189,7 @@ def get_recommendations(
 
     # ── Step 6: Build response ────────────────────────────────────────────────
     results = []
-    for _, row in filtered.head(10).iterrows():
+    for _, row in filtered.head(11).iterrows():
         tuition_l = round(row["tuition_fees"] / 100000, 1)
         salary_l  = round(row["avg_salary"]   / 100000, 1)
         score     = int(row["match_score"])
