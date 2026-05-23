@@ -6,17 +6,23 @@ import toast from 'react-hot-toast';
 import { submitProfile } from '../api/profileApi';
 import { getRecommendations } from '../api/recommendationApi';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 
 import FormInput from '../components/FormInput';
 
 const ProfileFormPage = () => {
   const navigate = useNavigate();
   const { setUserProfile, setRecommendations } = useApp();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [budgetLabel, setBudgetLabel] = useState(2500000);  // ₹25L default
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-    defaultValues: { budget: 2500000 }  // ₹25L default
+    defaultValues: { 
+      budget: 2500000,  // ₹25L default
+      full_name: user?.name || '',
+      email: user?.email || ''
+    }
   });
 
 
