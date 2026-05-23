@@ -227,12 +227,12 @@ const LoginPage = () => {
               </div>
               
               <div className="flex gap-3 h-12">
-                <div className="flex-1 bg-white/10 border border-white/5 rounded-xl flex items-center justify-center font-bold text-white tracking-widest text-lg">
+                <div className="px-4 whitespace-nowrap flex-shrink-0 bg-white/10 border border-white/5 rounded-xl flex items-center justify-center font-bold text-white tracking-widest text-lg">
                   {captchaMath.num1} {captchaMath.operator} {captchaMath.num2} = ?
                 </div>
                 <input
                   type="number"
-                  className="flex-1 bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-center text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium no-spinners"
+                  className="flex-1 min-w-0 bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-center text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium no-spinners"
                   placeholder="Result"
                   value={captchaInput}
                   onChange={handleCaptchaChange}
